@@ -1,14 +1,24 @@
+<<<<<<< HEAD
 import React, { useContext } from "react";
+=======
+import React from "react";
+>>>>>>> 7484101f95554195f1ba8c8b54bee6548dd1ff29
 import Card from "../../Shared/Components/UIElements/Card";
 import PlaceItem from "./PlaceItem";
 import "./PlaceList.css";
 import Button from "../../Shared/Components/FormElements/Button";
+<<<<<<< HEAD
 import { AuthContext } from "../../Shared/Context/auth-context";
 
 const PlaceList = (props) => {
   const Auth = useContext(AuthContext);
 
   if (props.items.length === 0 && Auth.userId === props.placeCreatorId) {
+=======
+
+const PlaceList = (props) => {
+  if (props.items.length === 0) {
+>>>>>>> 7484101f95554195f1ba8c8b54bee6548dd1ff29
     return (
       <div className="place-list center">
         <Card>
@@ -17,6 +27,7 @@ const PlaceList = (props) => {
         </Card>
       </div>
     );
+<<<<<<< HEAD
   } else if (props.items.length === 0) {
     return (
       <div className="place-list center">
@@ -27,6 +38,9 @@ const PlaceList = (props) => {
     );
   }
 
+=======
+  }
+>>>>>>> 7484101f95554195f1ba8c8b54bee6548dd1ff29
   return (
     <ul className="place-list">
       {props.items.map((place) => {
