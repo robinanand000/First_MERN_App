@@ -25,7 +25,7 @@ const UsersList = (props) => {
             name={user.name}
             placeCount={user.places.length}
           />
-        );
+        )
       })}
     </ul>
   );

@@ -101,7 +101,7 @@ const Auth = () => {
       <ErrorModal error={error} onClear={clearError} />
       <Card className="authentication">
         {isLoading && <LoadingSpinner asOverlay />}
-        <h2>{isLoginMode ? "Log In " : "Sign Up"} Required</h2>
+        <h2>{isLoginMode ? "Log In " : "Sign Up"}</h2>
         <hr />
         <form action="" onSubmit={authSumbitHandler}>
           {!isLoginMode && (
@@ -120,7 +120,7 @@ const Auth = () => {
               onInput={inputHandler}
               center
               id="image"
-              errorText="Please provide an image"
+              // errorText="Please provide an image"
             />
           )}
           <Input

@@ -1,10 +1,27 @@
 .place-form {
   list-style: none;
-  margin: 0 auto;
-  padding: 1rem;
-  width: 90%;
+  margin: 2.5rem auto;
+  padding: 2.2rem 2.4rem 2.9rem;
+  width: 92%;
   max-width: 40rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
-  border-radius: 6px;
-  background: white;
+  box-shadow: 0 8px 36px rgba(0, 191, 166, 0.11),
+    0 2px 12px rgba(52, 123, 158, 0.08);
+  border-radius: 20px;
+  background: #fff;
+  font-family: "Open Sans", sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  transition: box-shadow 0.25s;
+}
+
+.place-form:hover {
+  box-shadow: 0 18px 52px rgba(0, 191, 166, 0.14),
+    0 4px 14px rgba(52, 123, 158, 0.13);
+}
+
+.place-form button {
+  margin-top: 1.3rem;
+  width: 100%;
+  display: block;
 }

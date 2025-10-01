@@ -30,7 +30,7 @@ const Users = () => {
           <LoadingSpinner asOverlay />
         </div>
       )}
-      {!isLoading && loadedUsers && <UsersList items={loadedUsers} />};
+      {!isLoading && loadedUsers && <UsersList items={loadedUsers} />}
     </React.Fragment>
   );
 };
