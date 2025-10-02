@@ -6,8 +6,10 @@ const fileUpload = require("../middlewares/file-upload");
 
 const router = express.Router();
 
+// PUBLIC ROUTES
 router.get("/", userControllers.getUsers);
 
+// PROTECTED ROUTES
 router.post(
   "/signup",
   fileUpload.single("image"),

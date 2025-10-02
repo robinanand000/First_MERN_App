@@ -7,10 +7,11 @@ const checkAuth = require("../middlewares/check-auth");
 
 const router = express.Router();
 
+// PUBLIC ROUTES
 router.get("/:pId", placesControllers.getPlaceById);
-
 router.get("/user/:uId", placesControllers.getPlacesByUserId);
 
+// PROTECTED ROUTES
 router.use(checkAuth);
 
 router.post(

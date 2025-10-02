@@ -3,8 +3,10 @@ const bodyParser = require("body-parser");
 const HttpError = require("./models/http-error");
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
-const fs = require("fs");
 const cloudinary = require("cloudinary").v2;
+
+const placesRoutes = require("./routes/places-routes");
+const usersRoutes = require("./routes/users-routes");
 
 dotenv.config();
 cloudinary.config({
@@ -13,15 +15,10 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const placesRoutes = require("./routes/places-routes");
-const usersRoutes = require("./routes/users-routes");
-const path = require("path");
-
 const app = express();
+app.use(express.json());
 
-app.use("/uploads/images", express.static(path.join("uploads", "images")));
-app.use(bodyParser.json());
-
+// CORS
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
@@ -33,27 +30,25 @@ app.use((req, res, next) => {
   next();
 });
 
+// ROUTES
 app.use("/api/places", placesRoutes);
 app.use("/api/users", usersRoutes);
 
+// ROUTING ERROR CHECKING
 app.use((req, res, next) => {
   const error = new HttpError("Could not find the Route!", 404);
   throw error;
 });
 
+// ERROR HANDLER
 app.use((error, req, res, next) => {
-  if (req.file) {
-    fs.unlink(req.file.path, (err) => {
-      console.log("File Delete Error", err);
-    });
-  }
   if (res.headerSent) {
     return next(error);
   }
   const statusCode = typeof error.code === "number" ? error.code : 500;
   res
     .status(statusCode)
-    .json({ message: error.message || "An unknown error occured!" });
+    .json({ message: error.message || "An unknown error occurred!" });
 });
 
 mongoose
@@ -62,7 +57,7 @@ mongoose
   )
   .then(() => {
     console.log("✅ MongoDB connected successfully!");
-    const PORT = process.env.port || 5000;
+    const PORT = process.env.PORT || 5000;
     app.listen(PORT);
   })
   .catch((err) => {
