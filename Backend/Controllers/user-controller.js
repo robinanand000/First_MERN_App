@@ -2,6 +2,7 @@ const { validationResult } = require("express-validator");
 const path = require("path");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const Cloudinary = require("cloudinary").v2;
 
 const HttpError = require("../models/http-error");
 const User = require("../models/user");
@@ -111,7 +112,6 @@ const signup = async (req, res, next) => {
 // LOG IN *****************
 
 const login = async (req, res, next) => {
-  console.log(req.body);
   const { email, password } = req.body;
 
   let user;
@@ -123,7 +123,7 @@ const login = async (req, res, next) => {
   }
 
   if (!user) {
-    const error = new HttpError("Invalid credentials!", 403);
+    const error = new HttpError("User does not exist! Switch to Sign Up", 403);
     return next(error);
   }
 

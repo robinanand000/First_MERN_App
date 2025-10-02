@@ -133,7 +133,6 @@ const createPlace = async (req, res, next) => {
     const error = new HttpError("Creating place failed!", 500);
     return next(error);
   }
-  console.log("created place!!!!!!!!!!", createdPlace);
 
   res.status(201).json({ place: createdPlace.toObject({ getters: true }) });
 };
