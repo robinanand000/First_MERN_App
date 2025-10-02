@@ -1,10 +1,9 @@
 const express = require("express");
-const bodyParser = require("body-parser");
-const HttpError = require("./models/http-error");
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const cloudinary = require("cloudinary").v2;
 
+const HttpError = require("./models/http-error");
 const placesRoutes = require("./routes/places-routes");
 const usersRoutes = require("./routes/users-routes");
 
