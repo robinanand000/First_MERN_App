@@ -52,11 +52,29 @@ const signup = async (req, res, next) => {
     const error = new HttpError("Password hashing failed!", 500);
     return next(error);
   }
+
+  let imageUrl = null;
+  if (req.file) {
+    try {
+      const uploadResult = await cloudinary.uploader.upload(req.file.path);
+
+      fs.unlink(req.file.path, (err) => {
+        if (err) console.error("Failed to delete local file:", err);
+      });
+
+      imageUrl = uploadResult.secure_url;
+    } catch (err) {
+      console.error("Cloudinary upload error:", err);
+      const error = new HttpError("Image upload failed!", 500);
+      return next(error);
+    }
+  }
+
   const createdUser = new User({
     name,
     email,
     password: hashedPassword,
-    image: req.file.path,
+    image: imageUrl,
     places: [],
   });
 

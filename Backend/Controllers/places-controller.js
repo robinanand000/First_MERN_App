@@ -2,6 +2,7 @@ const { validationResult } = require("express-validator");
 const mongoose = require("mongoose");
 const path = require("path");
 const fs = require("fs");
+const cloudinary = require("cloudinary").v2;
 
 const HttpError = require("../models/http-error");
 const getCoordsForAddress = require("../util/location");
@@ -83,12 +84,28 @@ const createPlace = async (req, res, next) => {
     return next(error);
   }
 
+  let imageUrl = null;
+  if (req.file) {
+    try {
+      const uploadResult = await cloudinary.uploader.upload(req.file.path);
+
+      fs.unlink(req.file.path, (err) => {
+        if (err) console.error("Failed to delete local file:", err);
+      });
+
+      imageUrl = uploadResult.secure_url;
+    } catch (err) {
+      const error = new HttpError("Image upload failed!", 500);
+      return next(error);
+    }
+  }
+
   const createdPlace = new Place({
     title,
     description,
     address,
     location: coordinates,
-    image: req.file ? req.file.path : null,
+    image: imageUrl,
     creator: req.userData.userId,
   });
 
@@ -116,6 +133,8 @@ const createPlace = async (req, res, next) => {
     const error = new HttpError("Creating place failed!", 500);
     return next(error);
   }
+  console.log("created place!!!!!!!!!!", createdPlace);
+
   res.status(201).json({ place: createdPlace.toObject({ getters: true }) });
 };
 
@@ -194,6 +213,14 @@ const deletePlace = async (req, res, next) => {
   }
 
   let imagePath = place.image;
+
+  const getPublicIdFromUrl = (url) => {
+    const parts = url.split("/");
+    const fileName = parts[parts.length - 1];
+    const publicId = fileName.split(".")[0];
+    return publicId;
+  };
+
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
@@ -208,9 +235,15 @@ const deletePlace = async (req, res, next) => {
     );
     return next(error);
   }
-  fs.unlink(imagePath, (err) => {
-    console.log(err);
-  });
+
+  const publicId = getPublicIdFromUrl(imagePath);
+
+  try {
+    await cloudinary.uploader.destroy(publicId);
+  } catch (error) {
+    const err = new HttpError("Failed to delete image from cloud", 500);
+    return next(err);
+  }
 
   res.status(200).json({ message: "Deleted Place!" });
 };

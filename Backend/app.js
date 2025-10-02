@@ -1,9 +1,17 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const HttpError = require("./models/http-error");
-require("dotenv").config();
+const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const fs = require("fs");
+const cloudinary = require("cloudinary").v2;
+
+dotenv.config();
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 const placesRoutes = require("./routes/places-routes");
 const usersRoutes = require("./routes/users-routes");

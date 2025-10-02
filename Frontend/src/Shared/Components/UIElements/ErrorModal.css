@@ -1,0 +1,26 @@
+.error-modal-content {
+  color: #b00020; /* strong red error color */
+  font-weight: 600;
+  font-size: 1.1rem;
+  text-align: center;
+  margin: 1.5rem 0;
+}
+
+.error-modal-footer button {
+  background-color: #b00020;
+  color: white;
+  border-radius: 10px;
+  padding: 0.6rem 1.5rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(176, 0, 32, 0.4);
+  transition: background-color 0.3s ease;
+}
+
+.error-modal-footer button:hover,
+.error-modal-footer button:focus {
+  background-color: #8b0019;
+  box-shadow: 0 6px 12px rgba(139, 0, 25, 0.6);
+  outline: none;
+}

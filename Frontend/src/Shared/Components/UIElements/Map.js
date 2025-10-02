@@ -1,68 +1,115 @@
+// const Map = (props) => {
+//   const mapRef = useRef();
+
+//   const lng = props.center.lng;
+//   const lat = props.center.lat;
+
+//   useEffect(() => {
+//     if (lng === undefined || lat === undefined) return;
+//     const map = new OLMap({
+//       target: mapRef.current,
+//       layers: [
+//         new TileLayer({
+//           source: new OSM(),
+//         }),
+//       ],
+//       view: new View({
+//         center: fromLonLat([lng, lat]),
+//         zoom: props.zoom,
+//       }),
+//     });
+
+//     return () => map.setTarget(null);
+//   }, [props.zoom, lat, lng]);
+
+//   return (
+//     <div
+//       ref={mapRef}
+//       className={`map ${props.className}`}
+//       style={{
+//         width: "100%",
+//         height: "350px",
+//         position: "relative",
+//       }}
+//     ></div>
+//   );
+// };
+
 import React, { useRef, useEffect } from "react";
 import "ol/ol.css";
 import { Map as OLMap, View } from "ol";
 import TileLayer from "ol/layer/Tile";
-import OSM from "ol/source/OSM";
+import { OSM } from "ol/source";
 import { fromLonLat } from "ol/proj";
-import "./map.css";
-
-// const Map = (props) => {
-//   return (
-//     <div className={`map ${props.className}`} style={props.style}>
-//       <iframe
-//         title="map"
-//         width="100%"
-//         height="100%"
-//         frameBorder="0"
-//         scrolling="no"
-//         marginHeight="0"
-//         marginWidth="0"
-//         src={
-//           "https://maps.google.com/maps?q=" +
-//           props.coordinates.lat.toString() +
-//           "," +
-//           props.coordinates.long.toString() +
-//           "&t=&z=15&ie=UTF8&iwloc=&output=embed"
-//         }
-//       ></iframe>
-//       <script
-//         type="text/javascript"
-//         src="https://embedmaps.com/google-maps-authorization/script.js?id=5a33be79e53caf0a07dfec499abf84b7b481f165"
-//       ></script>
-//     </div>
-//   );
-// };
+import { Feature } from "ol";
+import Point from "ol/geom/Point";
+import VectorSource from "ol/source/Vector";
+import VectorLayer from "ol/layer/Vector";
+import { Style, Icon } from "ol/style";
+import locationMarker from "../../../assets/gps.png";
 
 const Map = (props) => {
   const mapRef = useRef();
+  const mapInstance = useRef(null);
+
+  const lng = props.center?.lng;
+  const lat = props.center?.lat;
+  const zoom = props.zoom || 16;
 
   useEffect(() => {
-    const map = new OLMap({
-      target: mapRef.current,
-      layers: [
-        new TileLayer({
-          source: new OSM(),
-        }),
-      ],
-      view: new View({
-        center: fromLonLat([props.center.long, props.center.lat]),
-        zoom: props.zoom,
-      }),
+    if (!lng || !lat) return;
+
+    const locationFeature = new Feature({
+      geometry: new Point(fromLonLat([lng, lat])),
     });
 
-    return () => map.setTarget(null); // Cleanup on unmount
-  }, [props.center, props.zoom]);
+    locationFeature.setStyle(
+      new Style({
+        image: new Icon({
+          src: locationMarker,
+          scale: 0.1,
+          anchor: [0.5, 1],
+        }),
+      })
+    );
+
+    const vectorSource = new VectorSource({
+      features: [locationFeature],
+    });
+
+    const vectorLayer = new VectorLayer({
+      source: vectorSource,
+    });
+
+    if (!mapInstance.current) {
+      mapInstance.current = new OLMap({
+        target: mapRef.current,
+        layers: [
+          new TileLayer({
+            source: new OSM(),
+          }),
+          vectorLayer,
+        ],
+        view: new View({
+          center: fromLonLat([lng, lat]),
+          zoom,
+        }),
+      });
+    } else {
+      const map = mapInstance.current;
+      map.getLayers().setAt(1, vectorLayer);
+      const view = map.getView();
+      view.setCenter(fromLonLat([lng, lat]));
+      view.setZoom(zoom);
+    }
+  }, [lng, lat, zoom]);
 
   return (
     <div
       ref={mapRef}
-      className={`map ${props.className}`}
-      style={{
-        width: "100%",
-        height: "350px",
-        position: "relative",
-      }}
-    ></div>
+      className={`map ${props.className || ""}`}
+      style={{ width: "100%", height: "340px", position: "relative" }}
+    />
   );
 };
 
