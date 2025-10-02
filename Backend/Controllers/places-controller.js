@@ -57,6 +57,13 @@ const getPlacesByUserId = async (req, res, next) => {
 // CREATE PLACE *****************
 
 const createPlace = async (req, res, next) => {
+  console.log("Cloudinary config:", {
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET ? "SET" : "NOT SET",
+  });
+  console.log("File received:", req.file);
+
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return next(new HttpError("Invalid input", 422));

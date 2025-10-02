@@ -22,7 +22,12 @@ const getUsers = async (req, res, next) => {
 // SIGN UP *****************
 
 const signup = async (req, res, next) => {
-  console.log("Uploaded file:", req.file);
+  console.log("Cloudinary config in signup:", {
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET ? "SET" : "NOT SET",
+  });
+  console.log("File received:", req.file);
 
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -56,15 +61,26 @@ const signup = async (req, res, next) => {
     const uploadResult = await new Promise((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
         {
-          folder: "Placebook_Profile_Pictures",
+          folder: "Placebook_Profile_Pictures", // or "Placebook_Places"
+          resource_type: "image", // explicitly mention this if you upload images only
         },
-        (err, result) => (err ? reject(err) : resolve(result))
+        (error, result) => {
+          if (error) {
+            console.error("Cloudinary upload error:", error);
+            reject(error);
+          } else {
+            resolve(result);
+          }
+        }
       );
+      if (!req.file || !req.file.buffer) {
+        reject(new Error("No file buffer found in request"));
+      }
       uploadStream.end(req.file.buffer);
     });
-
     imageUrl = uploadResult.secure_url;
   } catch (err) {
+    console.error("Image upload failed with error:", err);
     return next(new HttpError("Image upload failed!", 500));
   }
 
