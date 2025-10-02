@@ -57,13 +57,6 @@ const getPlacesByUserId = async (req, res, next) => {
 // CREATE PLACE *****************
 
 const createPlace = async (req, res, next) => {
-  console.log("Cloudinary config:", {
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET ? "SET" : "NOT SET",
-  });
-  console.log("File received:", req.file);
-
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return next(new HttpError("Invalid input", 422));
@@ -88,6 +81,10 @@ const createPlace = async (req, res, next) => {
       const uploadStream = cloudinary.uploader.upload_stream(
         {
           folder: "Placebook_Places",
+          transformation: [
+            { width: 800, height: 450, crop: "fill", gravity: "auto" },
+            { fetch_format: "auto", quality: "auto", dpr: "auto" },
+          ],
         },
         (err, result) => (err ? reject(err) : resolve(result))
       );

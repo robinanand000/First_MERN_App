@@ -22,13 +22,6 @@ const getUsers = async (req, res, next) => {
 // SIGN UP *****************
 
 const signup = async (req, res, next) => {
-  console.log("Cloudinary config in signup:", {
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET ? "SET" : "NOT SET",
-  });
-  console.log("File received:", req.file);
-
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return next(new HttpError("Invalid input", 422));
@@ -66,7 +59,6 @@ const signup = async (req, res, next) => {
         },
         (error, result) => {
           if (error) {
-            console.error("Cloudinary upload error:", error);
             reject(error);
           } else {
             resolve(result);
@@ -80,7 +72,6 @@ const signup = async (req, res, next) => {
     });
     imageUrl = uploadResult.secure_url;
   } catch (err) {
-    console.error("Image upload failed with error:", err);
     return next(new HttpError("Image upload failed!", 500));
   }
 
