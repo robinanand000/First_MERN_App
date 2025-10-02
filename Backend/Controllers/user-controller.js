@@ -2,7 +2,8 @@ const { validationResult } = require("express-validator");
 const path = require("path");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const Cloudinary = require("cloudinary").v2;
+const cloudinary = require("cloudinary").v2;
+const fs = require("fs");
 
 const HttpError = require("../models/http-error");
 const User = require("../models/user");
@@ -55,9 +56,12 @@ const signup = async (req, res, next) => {
   }
 
   let imageUrl = null;
+
   if (req.file) {
     try {
-      const uploadResult = await cloudinary.uploader.upload(req.file.path);
+      const uploadResult = await cloudinary.uploader.upload(req.file.path, {
+        folder: "Placebook_Profile_Pictures",
+      });
 
       fs.unlink(req.file.path, (err) => {
         if (err) console.error("Failed to delete local file:", err);
@@ -103,7 +107,6 @@ const signup = async (req, res, next) => {
     );
     return next(error);
   }
-
   res
     .status(201)
     .json({ userId: createdUser.id, email: createdUser.email, token: token });

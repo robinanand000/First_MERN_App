@@ -87,7 +87,9 @@ const createPlace = async (req, res, next) => {
   let imageUrl = null;
   if (req.file) {
     try {
-      const uploadResult = await cloudinary.uploader.upload(req.file.path);
+      const uploadResult = await cloudinary.uploader.upload(req.file.path, {
+        folder: "Placebook_Places",
+      });
 
       fs.unlink(req.file.path, (err) => {
         if (err) console.error("Failed to delete local file:", err);
